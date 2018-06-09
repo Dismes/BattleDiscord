@@ -46,6 +46,8 @@ client.on('message', message => {
                 }
 
 
+
+
                 if (whattotest == 'd') {
 
 
@@ -74,8 +76,16 @@ client.on('message', message => {
             message.reply(whatToSay + ' = ' + totalvalue + ' ' + theRest);
         }
 
+        if(splitmessage[0] === '/Ohnono'){
+            Music(message, 'Ohnono', 2);
+        }
+
         if (splitmessage[0] === '/StopDogging') {
             Music(message, 'bark', 19);
+        }
+
+        if (splitmessage[0] === '/What') {
+            Music(message, 'What', 1);
         }
 
         if (splitmessage[0] === '/Rammus') {
