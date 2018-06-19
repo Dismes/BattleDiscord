@@ -2,7 +2,9 @@ const Discord = require('discord.js');
 
 const client = new Discord.Client();
 const broadcast = client.createVoiceBroadcast();
+var shouldContinue = false;
 process.setMaxListeners(9999);
+
 function makeintoaArray(array) {
     var newarray = [];
     for (i = 0; i < array.length; i++) {
@@ -76,7 +78,27 @@ client.on('message', message => {
             message.reply(whatToSay + ' = ' + totalvalue + ' ' + theRest);
         }
 
-        if(splitmessage[0] === '/Ohnono'){
+
+        if (splitmessage[0] === '/Play') {
+            PlayYoutube(message, splitmessage[1], true);
+        }
+
+        if (splitmessage[0] === '/Repeat') {
+            shouldContinue = true;
+            PlayYoutube(message, splitmessage[1], false);
+        }
+
+        if (splitmessage[0] === '/End') {
+            shouldContinue = false;
+            message.member.voiceChannel.leave();
+
+        }
+
+        if (splitmessage[0] === '/RawDeal') {
+            Music(message, 'RawDeal', 2);
+        }
+
+        if (splitmessage[0] === '/Ohnono') {
             Music(message, 'Ohnono', 2);
         }
 
@@ -134,10 +156,10 @@ client.on('message', message => {
         if (splitmessage[0] == '/Win') {
             Music(message, 'Win', 1);
         }
-        if(splitmessage[0] == '/Megumin'){
+        if (splitmessage[0] == '/Megumin') {
             Music(message, 'Megumin', 58);
         }
-        if(splitmessage[0] == '/Help'){
+        if (splitmessage[0] == '/Help') {
             Music(message, 'Help', 1);
         }
         if (splitmessage[0] == '/Quack') {
@@ -181,6 +203,7 @@ client.on('message', message => {
         }
 
         function Music(object, Where, value) {
+            console.log(object.author.username);
             if (object.member.voiceChannel) {
                 object.member.voiceChannel.join()
                     .then(connection => { // Connection is an instance of VoiceConnection
@@ -199,6 +222,50 @@ client.on('message', message => {
                 message.reply('You need to join a voice channel first!');
             }
         }
+
+        function PlayYoutube(object, URL, EndOrNot) {
+            if (object.author.username === 'BattlePants') {
+                const ytdl = require('ytdl-core');
+                const streamOptions = {
+                    seek: 0,
+                    volume: .3
+                };
+                const broadcast = client.createVoiceBroadcast();
+                if (object.member.voiceChannel) {
+                    object.member.voiceChannel.join()
+                        .then(connection => {
+                            const stream = ytdl(URL, {
+                                filter: 'audioonly'
+                            });
+                            broadcast.playStream(stream);
+                            const dispatcher = connection.playBroadcast(broadcast);
+                            if (EndOrNot === true) {
+                                broadcast.on('end', () => {
+                                    object.member.voiceChannel.leave();
+                                })
+                            } else {
+                                if (shouldContinue === true) {
+                                    console.log(shouldContinue);
+                                    broadcast.on('end', () => {
+                                        if (shouldContinue === true) {
+                                            PlayYoutube(object, URL, EndOrNot)
+                                        }
+                                    })
+                                }
+
+
+                            }
+
+                        })
+                        .catch(console.error);
+                } else {
+                    object.reply('You need to join a voice channel first!');
+                }
+            } else {
+                object.reply("You ain't no BattlePants!");
+            }
+        }
+
         function doggingVoice(object) {
             if (object.member.voiceChannel) {
                 object.member.voiceChannel.join()
@@ -238,4 +305,3 @@ var roll = function (howMany, maxAmount) {
 
 
 client.login('');
-
