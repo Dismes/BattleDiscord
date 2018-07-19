@@ -1,4 +1,6 @@
 const Discord = require('discord.js');
+var DNDjs = require('./dnd.js')
+
 
 const client = new Discord.Client();
 const broadcast = client.createVoiceBroadcast();
@@ -202,6 +204,14 @@ client.on('message', message => {
             }
         }
 
+        if(splitmessage[0] == '/Dnd'){
+            DndApi(splitmessage);
+
+        }
+
+
+        
+
         function Music(object, Where, value) {
             console.log(object.author.username);
             if (object.member.voiceChannel) {
@@ -266,6 +276,13 @@ client.on('message', message => {
             }
         }
 
+        function DndApi(object){
+            DNDjs.SentGetPost(object).then((ress)=>{
+                message.reply(ress);
+            });
+        
+        }
+
         function doggingVoice(object) {
             if (object.member.voiceChannel) {
                 object.member.voiceChannel.join()
@@ -288,6 +305,8 @@ client.on('message', message => {
     }
 
 )
+
+
 
 
 var roll = function (howMany, maxAmount) {
